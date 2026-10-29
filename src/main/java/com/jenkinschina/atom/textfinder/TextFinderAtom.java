@@ -143,7 +143,7 @@ public class TextFinderAtom implements AtomTask {
         List<Path> found = new ArrayList<>();
         try (var walk = Files.walk(workspace, 10)) {
             walk.filter(Files::isRegularFile)
-                    .filter(path -> matchers.stream().anyMatch(m -> m.matches(workspace.relativize(path))
+                    .filter(path -> matchers.stream().anyMatch(m -> m.matches(workspace.relativize(path)) || m.matches(java.nio.file.Path.of("_").resolve(workspace.relativize(path)))
                             || m.matches(path.getFileName())))
                     .sorted()
                     .limit(200)
