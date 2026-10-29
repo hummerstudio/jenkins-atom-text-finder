@@ -1,0 +1,11 @@
+{
+  "name": "Find text in log",
+  "summary": "Searches the build log or workspace files and can fail the build on a match or on a missing match.",
+  "author": "hummerstudio",
+  "license": "MIT",
+  "tags": [
+    "official-port",
+    "text-finder"
+  ],
+  "homepage": "https://github.com/hummerstudio/jenkins-atom-text-finder"
+}
