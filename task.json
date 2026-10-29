@@ -1,7 +1,7 @@
 {
   "atomCode": "text-finder",
   "name": "Find text in log",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Searches the build log or workspace files and can fail the build on a match or on a missing match.",
   "execution": {
     "packagePath": "text-finder.jar",
@@ -53,6 +53,9 @@
     "protocol": "jenkins-1",
     "requires": {
       "runner": ">=0.4.0"
-    }
+    },
+    "context": [
+      "log"
+    ]
   }
 }
