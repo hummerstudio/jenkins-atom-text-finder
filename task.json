@@ -1,7 +1,7 @@
 {
   "atomCode": "text-finder",
   "name": "Find text in log",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "Searches the build log or workspace files and can fail the build on a match or on a missing match.",
   "execution": {
     "packagePath": "text-finder.jar",
@@ -9,7 +9,7 @@
     "target": "$atom_java_path -cp text-finder.jar com.jenkinschina.atom.sdk.AtomRunner"
   },
   "input": {
-    "pattern": {
+    "regexp": {
       "label": "正则（逗号分隔多个）",
       "type": "vuex-input",
       "default": ""
@@ -19,18 +19,23 @@
       "type": "checkbox",
       "default": "true"
     },
-    "files": {
+    "fileSet": {
       "label": "此外搜索这些文件（glob，逗号分隔）",
       "type": "vuex-input",
       "default": ""
     },
-    "failWhenMatch": {
-      "label": "命中就让构建失败",
-      "type": "checkbox",
-      "default": "true"
+    "buildResult": {
+      "label": "命中时把构建置为",
+      "type": "selector",
+      "default": "FAILURE",
+      "options": [
+        "FAILURE",
+        "UNSTABLE",
+        "SUCCESS"
+      ]
     },
     "failWhenMissing": {
-      "label": "没命中就让构建失败",
+      "label": "没命中就让这一步失败",
       "type": "checkbox",
       "default": "false"
     }

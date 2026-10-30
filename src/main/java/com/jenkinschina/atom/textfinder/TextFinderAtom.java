@@ -26,7 +26,8 @@ public class TextFinderAtom implements AtomTask {
 
     @Override
     public AtomResult run(AtomContext context) throws Exception {
-        String spec = context.getParam("pattern", "");
+        // plugin names first, then the aliases the earlier versions used
+        String spec = context.getParam("regexp", context.getParam("pattern", ""));
         if (spec.isBlank()) {
             return AtomResult.error(ErrorType.USER, 40001, "pattern is required");
         }
@@ -52,7 +53,7 @@ public class TextFinderAtom implements AtomTask {
             String text = scanLog(context, patterns, hits);
             scanned = text.isEmpty() ? 0 : text.split("\n").length;
         }
-        String files = context.getParam("files", "");
+        String files = context.getParam("fileSet", context.getParam("files", ""));
         if (!files.isBlank()) {
             for (Path file : find(context.getWorkspace(), files)) {
                 scanned += scanFile(file, patterns, hits);
@@ -60,7 +61,9 @@ public class TextFinderAtom implements AtomTask {
         }
 
         boolean found = !hits.isEmpty();
-        boolean failWhenMatch = context.getBooleanParam("failWhenMatch", true);
+        // the plugin lets you pick the result instead of "fail or pass"
+        String buildResult = context.getParam("buildResult", "FAILURE").trim().toUpperCase(java.util.Locale.ROOT);
+        boolean failWhenMatch = context.getBooleanParam("failWhenMatch", !"SUCCESS".equals(buildResult));
         boolean failWhenMissing = context.getBooleanParam("failWhenMissing", false);
 
         context.log("[text-finder] " + (found ? hits.size() + " match(es)" : "no match")
@@ -80,9 +83,13 @@ public class TextFinderAtom implements AtomTask {
             String why = found
                     ? "found " + hits.size() + " match(es): " + hits.get(0)
                     : "no line matched " + spec + ", which the job requires";
-            return AtomResult.failure(why)
+            AtomResult verdict = "UNSTABLE".equals(buildResult)
+                    ? AtomResult.success().markUnstable()
+                    : AtomResult.failure(why);
+            return verdict
                     .data("matches", String.valueOf(hits.size()))
-                    .data("linesScanned", String.valueOf(scanned));
+                    .data("linesScanned", String.valueOf(scanned))
+                    .data("buildResult", buildResult);
         }
         return result;
     }

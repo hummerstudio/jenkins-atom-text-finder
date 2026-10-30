@@ -38,6 +38,13 @@ printf '{"pattern": "DEPRECATED", "useBuildLog": "false", "files": "logs/*.txt",
 run "$dir" >/dev/null 2>&1 || fail "file scan failed"
 [ "$(output "$dir" matches)" = "1" ] || fail "file matches: $(cat "$dir/output.json")"
 
+# 4b. buildResult=UNSTABLE: the step succeeds, the build is marked
+dir="$(mktemp -d)"
+printf 'warning: deprecated\n' >"$dir/build.log"
+printf '{"regexp": "deprecated", "useBuildLog": "true", "buildResult": "UNSTABLE"}' >"$dir/input.json"
+run "$dir" atom_build_log="$dir/build.log" >/dev/null 2>&1 || fail "buildResult=UNSTABLE must not fail the step"
+grep -q '"build.result"' "$dir/output.json" || fail "UNSTABLE was not requested: $(cat "$dir/output.json")"
+
 # 5. an invalid regex is a user error, not a crash
 dir="$(mktemp -d)"
 printf '{"pattern": "([a-z", "useBuildLog": "false"}' >"$dir/input.json"
