@@ -37,4 +37,4 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: text-finder-atom
-          path: atom/dist/text-finder/
+          path: atom/target/dist/text-finder/
